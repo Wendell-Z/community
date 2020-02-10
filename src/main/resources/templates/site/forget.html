@@ -67,7 +67,7 @@
     <!-- 内容 -->
     <div class="main">
         <div class="container pl-5 pr-5 pt-3 pb-3 mt-3 mb-3">
-            <form class="mt-5" method="post" th:action="@{/forget}" name="forget">
+            <form class="mt-5" method="post" th:action="@{/user/forget}" name="forget">
                 <div class="form-group row">
                     <label for="your-email" class="col-sm-2 col-form-label text-right">邮箱:</label>
                     <div class="col-sm-10">
@@ -199,7 +199,7 @@
         }
         var your_email = document.forms["forget"]["email"].value;
         console.log(your_email);
-        var path = CONTEXT_PATH + "/verifycode?email=" + your_email;
+        var path = CONTEXT_PATH + "/user/verifycode?email=" + your_email;
         xmlhttp.open("GET", path);
         xmlhttp.send();
     }
