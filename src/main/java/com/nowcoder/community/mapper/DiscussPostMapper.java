@@ -27,4 +27,10 @@ public interface DiscussPostMapper {
      * userId=0即所有行 ！=0即对应用户的
      */
     int selectDiscussPostRows(@Param("userId") int userId);
+
+    int insertDiscussPost(DiscussPost discussPost);
+
+    DiscussPost selectDiscussPostById(int id);
+
+    int updateCommentCount(int id, int commentCount);
 }
