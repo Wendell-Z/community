@@ -46,7 +46,7 @@ public class MapperTest {
     @Test
     public void log() {
         logger.debug("debug");
-        logger.error("error");
+        logger.error("templates/error");
         logger.info("info");
         logger.warn("warn");
         logger.trace("trace");

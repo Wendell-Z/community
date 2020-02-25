@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nowcoder.community.mapper.MessageMapper">
+
+    <sql id="selectFields">
+        id, from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <sql id="insertFields">
+        from_id, to_id, conversation_id, content, status, create_time
+    </sql>
+
+    <!-- 查询用户的会话列表，
+     包含最近的一条私信，即message id最大的
+     用户的会话是以会话id做区分的
+     message表中有系统通知(from_id=1)，除去
+     status=2为删除，除去
+     当前用户可能给对方发 也别人发给当前用户-->
+    <select id="selectConversations" resultType="Message">
+        select
+        <include refid="selectFields"></include>
+        from message
+        where id in (
+        select max(id) from message
+        where status != 2
+        and from_id != 1
+        and (from_id = #{userId} or to_id = #{userId})
+        group by conversation_id
+        )
+        order by id desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询当前会话的总数量，
+    select count(id) from message WHERE id IN (
+    select max(id) as maxid from message
+    where status != 2
+    and from_id != 1
+    and (from_id = 111 or to_id = 111)
+    group by conversation_id
+    )-->
+    <select id="selectConversationCount" resultType="int">
+        select count(m.maxid) from (
+            select max(id) as maxid from message
+            where status != 2
+            and from_id != 1
+            and (from_id = #{userId} or to_id = #{userId})
+            group by conversation_id
+        ) as m
+    </select>
+
+    <!--
+    查询某个会话的所有私信 会话id为限制 未被删除
+    是否不用限制非系统消息 因为会话id做了限制-->
+    <select id="selectLetters" resultType="Message">
+        select
+        <include refid="selectFields"></include>
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+        order by id desc
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--查询某个会话私信的总数
+    会话id是选择条件
+    未被删除 非系统消息
+    是否不用限制非系统消息 因为会话id做了限制-->
+    <select id="selectLetterCount" resultType="int">
+        select count(id)
+        from message
+        where status != 2
+        and from_id != 1
+        and conversation_id = #{conversationId}
+    </select>
+
+    <!--
+    查询未读数 有会话id 即查询该会话id的私信未读数
+    无会话id即查询该用户所有的未读数
+    限制 userId（to_id即发给当前用户未读的才是对于该用户未读的） 会话id
+    status为未读 且非系统消息-->
+    <select id="selectLetterUnreadCount" resultType="int">
+        select count(id)
+        from message
+        where status = 0
+        and from_id != 1
+        and to_id = #{userId}
+        <if test="conversationId!=null">
+            and conversation_id = #{conversationId}
+        </if>
+    </select>
+
+    <insert id="insertMessage">
+        insert into message (<include refid="insertFields"></include>)
+        values (#{fromId},#{toId},#{conversationId},#{content},#{status},#{createTime})
+    </insert>
+
+    <!--
+        foreach语法掌握
+    -->
+    <update id="updateMessageStatus">
+        update message set status = #{status}
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+</mapper>

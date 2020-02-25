@@ -1,5 +1,6 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.holder.UserHolder;
 import com.nowcoder.community.service.CommentService;
@@ -30,6 +31,7 @@ public class CommentController {
      * @param comment
      * @return
      */
+    @LoginRequired
     @PostMapping(value = "/add/{discussPostId}")
     public String addComment(@PathVariable(value = "discussPostId") int discussPostId, Comment comment) {
         //判空就要异步 加了@ResponseBody 又不能渲染模板
@@ -44,7 +46,7 @@ public class CommentController {
         comment.setStatus(0);
         comment.setCreateTime(new Date());
         commentService.addComment(comment);
-        //重定向到当前帖子的详情
+        //重定向到当前帖子的详情 会刷新到首页 不得行
         return "redirect:/discuss/detail/" + discussPostId;
     }
 }
