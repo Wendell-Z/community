@@ -1,6 +1,8 @@
 package com.nowcoder.community.controller;
 
+import com.nowcoder.community.Event.EventProducer;
 import com.nowcoder.community.annontation.LoginRequired;
+import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.holder.UserHolder;
@@ -27,12 +29,22 @@ public class FollowController implements CommunityConstant {
     private UserHolder userHolder;
     @Autowired
     private UserService userService;
+    @Autowired
+    private EventProducer eventProducer;
 
     @LoginRequired
     @PostMapping(value = "/follow")
     @ResponseBody
     public String follow(int entityType, int entityId) {
         followService.follow(userHolder.getUser().getId(), entityType, entityId);
+        // 触发关注事件
+        Event event = new Event()
+                .setTopic(TOPIC_FOLLOW)
+                .setUserId(userHolder.getUser().getId())
+                .setEntityType(entityType)
+                .setEntityId(entityId)
+                .setEntityUserId(entityId);
+        eventProducer.fireEvent(event);
         return CommunityUtil.getString(200, "关注成功", null);
     }
 

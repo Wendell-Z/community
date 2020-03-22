@@ -1,6 +1,5 @@
 package com.nowcoder.community.util;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.stereotype.Component;
 
 public class RedisKeyUtil {

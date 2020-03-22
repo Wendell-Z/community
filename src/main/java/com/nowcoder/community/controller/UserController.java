@@ -34,7 +34,7 @@ import java.util.Map;
 public class UserController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-
+    //explaintion
     @Value("${community.path.upload}")
     private String uploadPath;
 

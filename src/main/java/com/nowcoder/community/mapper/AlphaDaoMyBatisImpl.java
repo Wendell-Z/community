@@ -10,4 +10,9 @@ public class AlphaDaoMyBatisImpl implements AlphaDao {
     public String select() {
         return "MyBatis";
     }
+
+    @Override
+    public String f() {
+        return null;
+    }
 }

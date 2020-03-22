@@ -8,23 +8,23 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 
 @Configuration
 public class RedisConfig {
+//wwwsd
+//wwwsd
+@Bean
+public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
+    RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    redisTemplate.setConnectionFactory(factory);
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(factory);
-
-        // 设置key的序列化方式
-        redisTemplate.setKeySerializer(RedisSerializer.string());
-        // 设置value的序列化方式
-        redisTemplate.setValueSerializer(RedisSerializer.json());
-        // 设置hash的key的序列化方式
+    // 设置key的序列化方式
+    redisTemplate.setKeySerializer(RedisSerializer.string());
+    // 设置value的序列化方式
+    redisTemplate.setValueSerializer(RedisSerializer.json());
+    /* 设置hash的key的序列化方式*/
         redisTemplate.setHashKeySerializer(RedisSerializer.string());
         // 设置hash的value的序列化方式
         redisTemplate.setHashValueSerializer(RedisSerializer.json());
 
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
-
     }
 }

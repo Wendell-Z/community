@@ -4,4 +4,6 @@ public interface AlphaDao {
 
     String select();
 
+    String f();
+
 }
