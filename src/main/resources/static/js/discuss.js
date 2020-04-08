@@ -1,4 +1,9 @@
 function like(btn, entityType, entityId, entityUserId, postId) {
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function (e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
     $.post(
         CONTEXT_PATH + "/like",
         {"entityType": entityType, "entityId": entityId, "entityUserId": entityUserId, "postId": postId},
@@ -15,6 +20,12 @@ function like(btn, entityType, entityId, entityUserId, postId) {
 }
 
 function comment(btn, entityType, entityId) {
+    //发送AJAX请求之前,将CSRF令牌设置到请求的消息头中.
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+    $(document).ajaxSend(function (e, xhr, options) {
+        xhr.setRequestHeader(header, token);
+    });
     $post(
         CONTEXT_PATH + "/comment/add",
         {"entityType": entityType, "entityId": entityId},

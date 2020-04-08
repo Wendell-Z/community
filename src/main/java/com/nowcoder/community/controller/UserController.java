@@ -125,13 +125,13 @@ public class UserController implements CommunityConstant {
         return "/site/forget";
     }
 
-    /**
-     * 这不是个好办法！
-     */
-    @LoginRequired
-    @GetMapping(value = "/upload")
-    public void upload() {
-    }
+//    /**
+//     * 这不是个好办法！
+//     */
+//    @LoginRequired
+//    @GetMapping(value = "/upload")
+//    public void upload() {
+//    }
 
     @LoginRequired
     @PostMapping(value = "/upload")

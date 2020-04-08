@@ -41,7 +41,7 @@ public class NoticeController implements CommunityConstant {
         User user = userHolder.getUser();
         Map<String, Object> commentVO = getTopicVO(user.getId(), TOPIC_COMMENT);
         if (commentVO != null) {
-            System.out.println(JSONObject.toJSONString(commentVO));
+            //System.out.println(JSONObject.toJSONString(commentVO));
             model.addAttribute("commentNotice", commentVO);
         }
 

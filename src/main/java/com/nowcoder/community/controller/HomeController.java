@@ -66,4 +66,14 @@ public class HomeController implements CommunityConstant {
     public String getErrorPage() {
         return "/error/500";
     }
+
+    @GetMapping(path = "/denied")
+    public String getDeniedPage() {
+        return "/error/404";
+    }
+
+    @GetMapping(path = "/")
+    public String getIndex() {
+        return "redirect:/index";
+    }
 }

@@ -175,7 +175,6 @@ public class MessageController {
 
     private List<Integer> getLetterIds(List<Message> letterList) {
         List<Integer> ids = new ArrayList<>();
-
         if (letterList != null) {
             for (Message message : letterList) {
                 if (userHolder.getUser().getId() == message.getToId() && message.getStatus() == 0) {
@@ -191,7 +190,6 @@ public class MessageController {
     @PostMapping(value = "/letter/delete")
     @ResponseBody
     public String deleteLetter(String letterId) {
-        System.out.println(letterId);
         return CommunityUtil.getString(200);
     }
 }

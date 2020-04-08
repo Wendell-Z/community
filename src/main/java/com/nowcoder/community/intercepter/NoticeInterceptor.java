@@ -18,7 +18,7 @@ public class NoticeInterceptor implements HandlerInterceptor {
     private MessageService messageService;
     @Autowired
     private UserHolder userHolder;
-
+    //网页头总显示通知总数 因此要AOP显示通知数量
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         User user = userHolder.getUser();

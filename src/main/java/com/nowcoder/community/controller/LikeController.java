@@ -34,7 +34,7 @@ public class LikeController implements CommunityConstant {
      * @param entityId
      * @return
      */
-    @LoginRequired
+
     @PostMapping("/like")
     @ResponseBody
     public String giveLike(int entityType, int entityId, int entityUserId, int postId) {
