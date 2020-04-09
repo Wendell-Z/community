@@ -33,4 +33,20 @@ public interface DiscussPostMapper {
     DiscussPost selectDiscussPostById(int id);
 
     int updateCommentCount(int id, int commentCount);
+
+    /**
+     * 更新帖子类型 置顶 普通（缺省）
+     *
+     * @param id
+     * @return
+     */
+    int updateDiscussType(int id, int type);
+
+    /**
+     * 更新帖子状态 加精 删除 普通（缺省）
+     *
+     * @param id
+     * @return
+     */
+    int updateDiscussStatus(int id, int status);
 }

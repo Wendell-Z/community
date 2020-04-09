@@ -40,6 +40,7 @@ public interface CommunityConstant {
 
     int ENTITY_TYPE_USER = 3;
 
+    //事件主题
     String TOPIC_LIKE = "like";
 
     String TOPIC_FOLLOW = "follow";
@@ -49,6 +50,7 @@ public interface CommunityConstant {
      * 主题: 发帖
      */
     String TOPIC_PUBLISH = "publish";
+    String TOPIC_DELETE = "delete";
 
     /**
      * 系统用户ID

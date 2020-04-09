@@ -4,6 +4,8 @@ import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.intercepter.LoginRequiredInterceptor;
 import com.nowcoder.community.intercepter.LoginTicketInterceptor;
 import com.nowcoder.community.intercepter.NoticeInterceptor;
+import com.nowcoder.community.intercepter.StatisticInterceptor;
+import com.sun.org.glassfish.external.statistics.Statistic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,6 +21,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //    private LoginRequiredInterceptor loginRequiredInterceptor;
     @Autowired
     private NoticeInterceptor noticeInterceptor;
+    @Autowired
+    private StatisticInterceptor statisticInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -28,12 +32,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg")
 //                .addPathPatterns("/register", "/login");
 
+
         registry.addInterceptor(loginTicketInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
 
 //        registry.addInterceptor(loginRequiredInterceptor)
 //                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
         registry.addInterceptor(noticeInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+        registry.addInterceptor(statisticInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 

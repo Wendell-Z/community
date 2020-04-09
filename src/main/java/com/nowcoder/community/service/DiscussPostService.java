@@ -3,6 +3,7 @@ package com.nowcoder.community.service;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.mapper.DiscussPostMapper;
+import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.SensitiveFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,14 @@ public class DiscussPostService {
     public int updatePostCommentCount(int postId, int commentCount) {
         return discussPostMapper.updateCommentCount(postId, commentCount);
     }
+
+    public int updatePostType(int id, int type) {
+        return discussPostMapper.updateDiscussType(id, type);
+    }
+
+    public int updatePostStatus(int id, int status) {
+        return discussPostMapper.updateDiscussType(id, status);
+    }
+
 
 }

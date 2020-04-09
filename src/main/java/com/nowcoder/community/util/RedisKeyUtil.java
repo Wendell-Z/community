@@ -12,6 +12,9 @@ public class RedisKeyUtil {
     private static final String PREFIX_KAPCHAT = "kapchat";
     public static final String PREFIX_TICKET = "ticket";
     public static final String PREFIX_USER = "user";
+    public static final String PREFIX_UV = "uv";
+    public static final String PREFIX_DAU = "dau";
+
 
     public static String getLikeKey(int entityType, int entityId) {
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
@@ -43,5 +46,21 @@ public class RedisKeyUtil {
 
     public static String getUserKey(int userId) {
         return PREFIX_USER + SPLIT + userId;
+    }
+
+    public static String getUVKey(String date) {
+        return PREFIX_UV + SPLIT + date;
+    }
+
+    public static String getUVKeyUnion(String startDate, String endDate) {
+        return PREFIX_UV + SPLIT + startDate + SPLIT + endDate;
+    }
+
+    public static String getDAUKey(String date) {
+        return PREFIX_DAU + SPLIT + date;
+    }
+
+    public static String getDauKeyUnion(String startDate, String endDate) {
+        return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
     }
 }
