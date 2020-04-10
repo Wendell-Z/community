@@ -1,6 +1,7 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.annontation.CalculateScore;
 import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
@@ -35,6 +36,7 @@ public class LikeController implements CommunityConstant {
      * @return
      */
 
+    @CalculateScore
     @PostMapping("/like")
     @ResponseBody
     public String giveLike(int entityType, int entityId, int entityUserId, int postId) {
@@ -58,7 +60,9 @@ public class LikeController implements CommunityConstant {
                     .setData("postId", postId);
             eventProducer.fireEvent(event);
         }
-
+        map.put("postId", postId);
+        // 报错的情况,将来统一处理.
+        //return CommunityUtil.getString(200, "发布成功！", map);
         return CommunityUtil.getString(200, null, map);
     }
 

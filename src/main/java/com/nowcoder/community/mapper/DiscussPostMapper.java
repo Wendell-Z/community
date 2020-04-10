@@ -18,7 +18,7 @@ public interface DiscussPostMapper {
      * @param limit
      * @return
      */
-    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit);
+    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit, int orderMode);
 
     /**
      * @param userId
@@ -49,4 +49,6 @@ public interface DiscussPostMapper {
      * @return
      */
     int updateDiscussStatus(int id, int status);
+
+    int updatePostScore(int id, double score);
 }

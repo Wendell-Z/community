@@ -1,6 +1,7 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.annontation.CalculateScore;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.holder.UserHolder;
 import com.nowcoder.community.service.CommentService;
@@ -9,8 +10,10 @@ import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
+import com.nowcoder.community.util.RedisKeyUtil;
 import com.nowcoder.community.util.SensitiveFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.utils.StringKeyDirtyFlagMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,9 +38,11 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private EventProducer eventProducer;
 
+    @CalculateScore
     @PostMapping(value = "/add")
     @ResponseBody
     public String addDiscussPost(String title, String content) {
+        //新帖子  放入队列  定时任务会去算分数
         User user = userHolder.getUser();
         if (user == null) {
             //未登录
@@ -61,19 +66,22 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityId(post.getId());
         eventProducer.fireEvent(event);
 
+        Map<String, Object> map = new HashMap<>();
+        map.put("postId", post.getId());
         // 报错的情况,将来统一处理.
-        return CommunityUtil.getString(200, "发布成功！");
+        return CommunityUtil.getString(200, "发布成功！", map);
     }
 
     /**
      * 返回帖子的详情：一条帖子应包括帖子的内容，对应的用户；帖子的评论，对应的用户；评论的回复，对应的用户
+     * 支持post是为了满足添加评论后的转发
      *
      * @param discussPostId
      * @param model
      * @param page
      * @return
      */
-    @GetMapping(value = "/detail/{discussPostId}")
+    @RequestMapping(value = "/detail/{discussPostId}", method = {RequestMethod.GET, RequestMethod.POST})
     public String getDiscussPost(@PathVariable("discussPostId") int discussPostId, Model model, Page page) {
         //根据帖子的ID获取帖子内容和对应用户
         DiscussPost post = discussPostService.selectDiscussPostById(discussPostId);
@@ -82,7 +90,7 @@ public class DiscussPostController implements CommunityConstant {
         model.addAttribute("user", user);
         // 点赞数量
         long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
-        System.out.println("用户：" + user.getUsername() + " 帖子：" + post.getTitle() + " 赞数：" + likeCount);
+        //System.out.println("用户：" + user.getUsername() + " 帖子：" + post.getTitle() + " 赞数：" + likeCount);
         model.addAttribute("likeCount", likeCount);
         // 点赞状态
         int likeStatus = userHolder.getUser() == null ? 0 :
@@ -161,9 +169,11 @@ public class DiscussPostController implements CommunityConstant {
     }
 
     // 加精
+    @CalculateScore
     @RequestMapping(path = "/wonderful", method = RequestMethod.POST)
     @ResponseBody
     public String setWonderful(int id) {
+        //加精帖子  放入队列  定时任务会去算分数
         discussPostService.updatePostStatus(id, 1);
 
         // 触发发帖事件
@@ -174,7 +184,10 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityId(id);
         eventProducer.fireEvent(event);
 
-        return CommunityUtil.getString(200);
+        Map<String, Object> map = new HashMap<>();
+        map.put("postId", id);
+        // 报错的情况,将来统一处理.
+        return CommunityUtil.getString(200, "发布成功！", map);
     }
 
     // 删除

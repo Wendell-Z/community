@@ -27,7 +27,7 @@ function publish() {
             setTimeout(function () {
                 $("#hintModal").modal("hide");
                 // 刷新页面
-                if (data.code == 0) {
+                if (data.code == 200) {
                     window.location.reload();
                 }
             }, 2000);

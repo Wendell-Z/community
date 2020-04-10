@@ -24,24 +24,24 @@ public class MapperTest {
 
     private final static Logger logger = LoggerFactory.getLogger(MapperTest.class);
 
-    @Test
-    public void testDiscussPostMapper() {
-        int rows = discussPostMapper.selectDiscussPostRows(0);
-        System.out.println(rows);
-        rows = discussPostMapper.selectDiscussPostRows(149);
-        System.out.println(rows);
-
-        List<DiscussPost> list = discussPostMapper.selectDiscussPosts(0, 0, 10);
-        for (DiscussPost post : list) {
-            System.out.println(post.toString());
-        }
-
-        list = discussPostMapper.selectDiscussPosts(149, 0, 10);
-
-        for (DiscussPost post : list) {
-            System.out.println(post.toString());
-        }
-    }
+//    @Test
+//    public void testDiscussPostMapper() {
+//        int rows = discussPostMapper.selectDiscussPostRows(0);
+//        System.out.println(rows);
+//        rows = discussPostMapper.selectDiscussPostRows(149);
+//        System.out.println(rows);
+//
+//        List<DiscussPost> list = discussPostMapper.selectDiscussPosts(0, 0, 10);
+//        for (DiscussPost post : list) {
+//            System.out.println(post.toString());
+//        }
+//
+//        list = discussPostMapper.selectDiscussPosts(149, 0, 10);
+//
+//        for (DiscussPost post : list) {
+//            System.out.println(post.toString());
+//        }
+//    }
 
     @Test
     public void log() {

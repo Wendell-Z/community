@@ -1,10 +1,12 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.annontation.CalculateScore;
 import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.Event;
+import com.nowcoder.community.entity.Page;
 import com.nowcoder.community.holder.UserHolder;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
@@ -40,22 +42,26 @@ public class CommentController implements CommunityConstant {
      * @param comment
      * @return
      */
+    @CalculateScore
     @LoginRequired
     @PostMapping(value = "/add/{discussPostId}")
-    public String addComment(@PathVariable(value = "discussPostId") int discussPostId, Comment comment) {
-        //判空就要异步 加了@ResponseBody 又不能渲染模板
-        //解决1 ：前端处理 页面刷新
-        //解决2 写一个提示框，有返回的提示数据才显示 没有就不显示
-//        if (null == comment.getContent() || StringUtils.isBlank(comment.getContent())){
-//
-//        }
+    public String addComment(@PathVariable(value = "discussPostId") int discussPostId, Comment comment, Page page) {
+
+        DiscussPost post = discussPostService.selectDiscussPostById(discussPostId);
+        if (post == null) {
+            return "/error/404";
+        }
+        System.out.println(page.toString());
         //当前用户发的评论
+
         comment.setUserId(userHolder.getUser().getId());
         //1为被删除
         comment.setStatus(0);
         comment.setCreateTime(new Date());
         commentService.addComment(comment);
-
+        if (!(post.getCommentCount() == 0) && post.getCommentCount() % 5 == 0) {
+            page.setCurrent(page.getCurrent() + 1);
+        }
         //触发评论事件
         Event event = new Event();
         event.setUserId(userHolder.getUser().getId())
@@ -72,6 +78,6 @@ public class CommentController implements CommunityConstant {
         }
         eventProducer.fireEvent(event);
         //重定向到当前帖子的详情 会刷新到首页 不得行
-        return "redirect:/discuss/detail/" + discussPostId;
+        return "forward:/discuss/detail/" + discussPostId + "?current=" + page.getCurrent();
     }
 }
