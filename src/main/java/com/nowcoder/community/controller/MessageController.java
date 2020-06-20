@@ -144,15 +144,15 @@ public class MessageController {
         //查用户
         User target = userService.findUserByName(toName);
         if (target == null) {
-            return CommunityUtil.getString(403, "目标用户不存在!");
+            return CommunityUtil.getJsonString(403, "目标用户不存在!");
         }
         //判断自己
         if (target.getId() == userHolder.getUser().getId()) {
-            return CommunityUtil.getString(403, "不能给自己发私信！");
+            return CommunityUtil.getJsonString(403, "不能给自己发私信！");
         }
         //私信内容不能为空
         if (null == content || StringUtils.isBlank(content)) {
-            return CommunityUtil.getString(403, "私信内容不能为空！");
+            return CommunityUtil.getJsonString(403, "私信内容不能为空！");
         }
 
         Message message = new Message();
@@ -169,7 +169,7 @@ public class MessageController {
         message.setCreateTime(new Date());
         messageService.addMessage(message);
 
-        return CommunityUtil.getString(200, "发送成功！");
+        return CommunityUtil.getJsonString(200, "发送成功！");
 
     }
 
@@ -190,6 +190,6 @@ public class MessageController {
     @PostMapping(value = "/letter/delete")
     @ResponseBody
     public String deleteLetter(String letterId) {
-        return CommunityUtil.getString(200);
+        return CommunityUtil.getJsonString(200);
     }
 }

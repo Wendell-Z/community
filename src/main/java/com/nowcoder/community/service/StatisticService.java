@@ -21,7 +21,7 @@ public class StatisticService {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    private SimpleDateFormat df = new SimpleDateFormat("yyMMdd");
+    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
 
     public void statisticUV(String ip) {
         String date = df.format(new Date());
@@ -37,9 +37,11 @@ public class StatisticService {
         List<String> keyList = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
+        //从指定的开始日期到指定的结束日期
         while (!calendar.getTime().after(endDate)) {
             String UVKey = RedisKeyUtil.getUVKey(df.format(calendar.getTime()));
             keyList.add(UVKey);
+            //加一天
             calendar.add(Calendar.DATE, 1);
         }
         String UVKeyUnion = RedisKeyUtil.getUVKeyUnion(df.format(startDate), df.format(endDate));
@@ -68,6 +70,7 @@ public class StatisticService {
             calendar.add(Calendar.DATE, 1);
         }
 
+        //任一天访问过的
         return (long) redisTemplate.execute((RedisCallback) connection -> {
             String DAUKeyUnion = RedisKeyUtil.getDauKeyUnion(df.format(startDate), df.format(endDate));
             connection.bitOp(RedisStringCommands.BitOperation.OR, DAUKeyUnion.getBytes(), keyList.toArray(new byte[0][0]));

@@ -32,7 +32,7 @@ public class CommunityUtil {
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
 
-    public static String getString(int code, String msg, Map<String, Object> map) {
+    public static String getJsonString(int code, String msg, Map<String, Object> map) {
         JSONObject json = new JSONObject();
         json.put("code", code);
         json.put("msg", msg);
@@ -44,12 +44,12 @@ public class CommunityUtil {
         return json.toJSONString();
     }
 
-    public static String getString(int code, String msg) {
-        return getString(code, msg, null);
+    public static String getJsonString(int code, String msg) {
+        return getJsonString(code, msg, null);
     }
 
-    public static String getString(int code) {
-        return getString(code, null, null);
+    public static String getJsonString(int code) {
+        return getJsonString(code, null, null);
     }
 
 }

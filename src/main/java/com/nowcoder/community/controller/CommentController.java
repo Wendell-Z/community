@@ -1,6 +1,6 @@
 package com.nowcoder.community.controller;
 
-import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.annontation.CalculateScore;
 import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.entity.Comment;
@@ -11,10 +11,8 @@ import com.nowcoder.community.holder.UserHolder;
 import com.nowcoder.community.service.CommentService;
 import com.nowcoder.community.service.DiscussPostService;
 import com.nowcoder.community.util.CommunityConstant;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

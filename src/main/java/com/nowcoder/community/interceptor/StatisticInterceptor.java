@@ -1,4 +1,4 @@
-package com.nowcoder.community.intercepter;
+package com.nowcoder.community.interceptor;
 
 import com.nowcoder.community.holder.UserHolder;
 import com.nowcoder.community.service.StatisticService;

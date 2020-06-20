@@ -16,163 +16,228 @@ import java.util.Map;
 
 @Component
 public class SensitiveFilter {
+    /**
+     * 定义日志组件
+     */
     private static final Logger logger = LoggerFactory.getLogger(SensitiveFilter.class);
-
-    // 替换符
-    private static final String REPLACEMENT = "***";
-
-    // 根节点
-    private TrieNode rootNode = new TrieNode();
+    /**
+     * 定义敏感词的替换词 每个敏感词均替换为一个***
+     */
+    private static final String REPLACE_WORD = "***";
 
     /**
-     * 在类加载后初始化敏感词表
+     * 定义根节点 前缀树的根节点为空
+     */
+    private final TrieNode rootNode = new TrieNode();
+
+    /**
+     * 定义前缀树的数据结构
+     */
+    private class TrieNode {
+        /**
+         * 标记当前节点是否为单词的结尾
+         * 默认不是结尾 即false
+         * 往树中添加敏感词时遍历到结尾会将该值置为true
+         */
+        private boolean isWordEnd = false;
+        /**
+         * 定义子节点 子节点可能有多个 因此用map作为数据结构
+         * key：子节点的字符 value：子节点的指针
+         */
+        private Map<Character, TrieNode> subNode = new HashMap<>();
+
+        /**
+         * 查看当前节点是否是敏感词的结尾
+         *
+         * @return
+         */
+        public boolean isWordEnd() {
+            return this.isWordEnd;
+        }
+
+        /**
+         * 将当前节点置为敏感词的结尾
+         *
+         * @param isWordEnd
+         */
+        public void setWordEnd(boolean isWordEnd) {
+            this.isWordEnd = isWordEnd;
+        }
+
+        /**
+         * 根据字符获取当前节点的子节点
+         *
+         * @param c
+         * @return
+         */
+        public TrieNode getSubNode(Character c) {
+            return this.subNode.get(c);
+        }
+
+        /**
+         * 给当前节点添加子节点
+         *
+         * @param c
+         * @param subNode
+         */
+        public void addSubNode(Character c, TrieNode subNode) {
+            this.subNode.put(c, subNode);
+        }
+    }
+
+    /**
+     * 首先在类加载实例化后初始化敏感词文件，即将敏感词文件中的所有敏感词构造到前缀树中。
      */
     @PostConstruct
     public void init() {
         try (
+                //获取当前类加载的位置 即/target/classes下
+                //sensitive-words.txt application.properties等配置文件在经过maven编译后都在classes目录下
                 //定义输入流
-                InputStream is = this.getClass().getClassLoader().getResourceAsStream("sensitive-words.txt");
-                //缓存读取
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                InputStream in = this.getClass().getClassLoader().getResourceAsStream("sensitive-words.txt");
+                //利用缓存读取
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         ) {
+            //定义敏感词
             String keyword;
-            //敏感词是一行一行的
+            //敏感词在文件中是一行一行书写的
+            //当读到的keyword不为空，就添加到树中
             while ((keyword = reader.readLine()) != null) {
-                // 每遍历到一个敏感词 添加到前缀树
-                this.addKeyword(keyword);
+                //将敏感词初始化到树中
+                this.addKeyWord(keyword);
             }
         } catch (IOException e) {
-            logger.error("加载敏感词文件失败: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     /**
-     * 根据敏感词表构造前缀树
+     * 将敏感词构造到前缀树中
      *
-     * @param keyWord
+     * @param keyword 敏感词文件中的敏感词
      */
-    private void addKeyword(String keyWord) {
-        //设置一个临时节点 用来做指针
-        //每次构造最开始 temNode为根节点
-        TrieNode tmpNode = this.rootNode;
-        //对该字符串的字符进行遍历
-        for (int i = 0; i < keyWord.length(); i++) {
-            Character c = keyWord.charAt(i);
-            //从父节点中获取子节点
-            TrieNode subNode = tmpNode.getSubNode(c);
-            //若子节点不存在  新建一个子节点 添加
+    private void addKeyWord(String keyword) {
+        //设置一个临时节点 作为指向当前根节点的指针
+        //每次构造最开始 tempNode为根节点
+        TrieNode tempNode = this.rootNode;
+
+        //遍历敏感词的每一个字符 判断树中是否已经存在
+        for (int i = 0; i < keyword.length(); i++) {
+            Character c = keyword.charAt(i);
+
+            //查看当前节点的子节点中是否有该字符
+            TrieNode subNode = tempNode.getSubNode(c);
+            //如果没有 给当前节点添加一个子节点
             if (subNode == null) {
+                //当前子节点为空 新添加一个子节点
                 subNode = new TrieNode();
-                tmpNode.addSubNode(c, subNode);
+                tempNode.addSubNode(c, subNode);
             }
-            //若存在 则节点指针向下
-            tmpNode = subNode;
-            //若当前字符是最后一个字符 那么该节点置为true 即敏感词的最后一位
-            if (i == keyWord.length() - 1) {
-                tmpNode.setKeyWordEnd(true);
+
+            //有子节点 则将根节点置为该子节点 准备遍历下一个字符
+            tempNode = subNode;
+            //如果当前字符是该敏感词的最后一个字符 将wordEnd标记置为true
+            //执行完if中的语句后 一个敏感词就构造到前缀树中了
+            if (i == keyword.length() - 1) {
+                tempNode.setWordEnd(true);
             }
         }
+
     }
 
-
+    /**
+     * 传入字符串，在前缀树中遍历字符串的字符，若遍历过程中找到了目标字符串的敏感词，将其替换为***
+     *
+     * @param text 要过滤的目标字符串
+     * @return
+     */
     public String sensitiveWordFilter(String text) {
+        //若是空字符串 返回空
         if (StringUtils.isBlank(text)) {
             return null;
         }
 
-        // 指针1
+        // 根节点
+        // 每次在目标字符串中找到一个敏感词，完成替换之后，都要再次从根节点遍历树开始一次新的过滤
         TrieNode tempNode = rootNode;
-        // 指针2
+        // begin指针作用是目标字符串每次过滤的开头
         int begin = 0;
-        // 指针3
+        // position指针的作用是指向待过滤的字符
+        // 若position指向的字符是敏感词的结尾，那么text.subString(begin,position+1)就是一个敏感词
         int position = 0;
-        // 结果
-        StringBuilder sb = new StringBuilder();
+        //过滤后的结果
+        StringBuilder result = new StringBuilder();
 
+        //开始遍历 position移动到目标字符串尾部是 循环结束
         while (position < text.length()) {
+            // 最开始时begin指向0 是第一次过滤的开始
+            // position也是0
             char c = text.charAt(position);
 
-            // 跳过符号
+            //忽略用户故意输入的符号 例如嫖※娼 忽略※后 前后字符其实也是敏感词
             if (isSymbol(c)) {
-                // 若指针1处于根节点,将此符号计入结果,让指针2向下走一步
+                //判断当前节点是否为根节点
+                //若是根节点 则代表目标字符串第一次过滤或者目标字符串中已经被遍历了一部分
+                //因为每次过滤掉一个敏感词时，都要将tempNode重新置为根节点,以重新去前缀树中继续过滤目标字符串剩下的部分
+                //因此若是根节点，代表依次新的过滤刚开始，可以直接将该特殊符号字符放入到结果字符串中
                 if (tempNode == rootNode) {
-                    sb.append(c);
+                    //将用户输入的符号添加到result中
+                    result.append(c);
+                    //此时将单词begin指针向后移动一位，以开始新的一个单词过滤
                     begin++;
                 }
-                // 无论符号在开头或中间,指针3都向下走一步
+                //若当前节点不是根节点，那说明符号字符后的字符还需要继续过滤
+                //所以单词开头位begin不变化，position向后移动一位继续过滤
                 position++;
                 continue;
             }
-
-            // 检查下级节点
+            //判断当前节点的子节点是否有目标字符c
             tempNode = tempNode.getSubNode(c);
+            //如果没有 代表当前beigin-position之间的字符串不是敏感词
+            // 但begin+1-position却不一定不是敏感词
             if (tempNode == null) {
-                // 以begin开头的字符串不是敏感词
-                sb.append(text.charAt(begin));
-                // 进入下一个位置
+                //所以只将begin指向的字符放入过滤结果
+                result.append(text.charAt(begin));
+                //position和begin都指向begin+1
                 position = ++begin;
-                // 重新指向根节点
+                //再次过滤
                 tempNode = rootNode;
-            } else if (tempNode.isKeyWordEnd()) {
-                // 发现敏感词,将begin~position字符串替换掉
-                sb.append(REPLACEMENT);
-                // 进入下一个位置
+            } else if (tempNode.isWordEnd()) {
+                //如果找到了子节点且子节点是敏感词的结尾
+                //则当前begin-position间的字符串是敏感词 将敏感词替换掉
+                result.append(REPLACE_WORD);
+                //begin移动到敏感词的下一位
                 begin = ++position;
-                // 重新指向根节点
+                //再次过滤
                 tempNode = rootNode;
-            } else if (position + 1 == text.length() && begin < position - 1) {
-                // 当position指向字符串最后一位字符且该字符串非敏感字符的最后一位时，即当前begin到position之间不是敏感字符
-                // 此时应判断begin与position的距离
-                //若 position -begin > 1 说明begin和position之间还有若干字符没有判断它们是否属于敏感词
-                //此时应position = begin++再次进行过滤
-                sb.append(text.charAt(begin));
+                //&& begin < position - 1
+            } else if (position + 1 == text.length()) {
+                //特殊情况
+                //虽然position指向的字符在树中存在，但不是敏感词结尾，并且position到了目标字符串末尾（这个重要）
+                //因此begin-position之间的字符串不是敏感词 但begin+1-position之间的不一定不是敏感词
+                //所以只将begin指向的字符放入过滤结果
+                result.append(text.charAt(begin));
+                //position和begin都指向begin+1
                 position = ++begin;
+                //再次过滤
                 tempNode = rootNode;
             } else {
-                // 检查下一个字符
+                //position指向的字符在树中存在，但不是敏感词结尾，并且position没有到目标字符串末尾
                 position++;
             }
         }
-        // 将最后一批字符计入结果
-        sb.append(text.substring(begin));
-        return sb.toString();
-    }
-
-    // 判断是否为符号
-    private boolean isSymbol(Character c) {
-        // 0x2E80~0x9FFF 是东亚文字范围
-        return !CharUtils.isAsciiAlphanumeric(c) && (c < 0x2E80 || c > 0x9FFF);
+        return begin < text.length() ? result.append(text.substring(begin)).toString() : result.toString();
     }
 
     /**
-     * 前缀树数据结构
+     * 判断是否为特殊符号
+     *
+     * @param c
+     * @return
      */
-    private class TrieNode {
-
-        private boolean isKeyWordEnd = false;
-        //子节点
-        Map<Character, TrieNode> subNode = new HashMap<>();
-
-        //查看当前子节点是否是末节点
-        public boolean isKeyWordEnd() {
-            return isKeyWordEnd;
-        }
-
-        //设置当前节点为末节点
-        public void setKeyWordEnd(boolean keyWordEnd) {
-            isKeyWordEnd = keyWordEnd;
-        }
-
-        //获取当前节点的子节点
-        public TrieNode getSubNode(Character c) {
-            return subNode.get(c);
-        }
-
-        //添加子节点
-        public void addSubNode(Character c, TrieNode node) {
-            this.subNode.put(c, node);
-        }
-
+    private boolean isSymbol(Character c) {
+        // 0x2E80~0x9FFF 是东亚文字范围
+        return !CharUtils.isAsciiAlphanumeric(c) && (c < 0x2E80 || c > 0x9FFF);
     }
 
 }

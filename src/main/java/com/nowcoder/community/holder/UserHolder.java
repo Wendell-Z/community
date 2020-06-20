@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 持有用户信息,用于代替session对象.
+ * ThreadLocal原理 实现原理
  */
 @Component
 public class UserHolder {

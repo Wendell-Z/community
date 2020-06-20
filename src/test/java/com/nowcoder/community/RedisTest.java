@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Duration;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -25,6 +27,14 @@ public class RedisTest {
     public void stringKey() {
         String key = "test:string";
         redisTemplate.opsForValue().set(key, "stringKey");
+        redisTemplate.opsForValue().set(key, "timeLimit", 1000, TimeUnit.MILLISECONDS);
+        //一分钟过期
+        redisTemplate.opsForValue().set(key, "s", Duration.ofMinutes(1));
+        //value.subString(start,end);
+        redisTemplate.opsForValue().get(key, 1, 2);
+        //序列化key
+        redisTemplate.dump(key);
+
         System.out.println(redisTemplate.opsForValue().get(key));
     }
 
@@ -42,10 +52,14 @@ public class RedisTest {
     @Test
     public void testHashes() {
         String redisKey = "test:user";
-
+        //Key String Value HashKey-Value
         redisTemplate.opsForHash().put(redisKey, "id", 1);
         redisTemplate.opsForHash().put(redisKey, "username", "zhangsan");
-
+        redisTemplate.opsForHash().delete(redisKey, "id", "is2");
+        Map map = redisTemplate.opsForHash().entries(redisKey);
+        redisTemplate.opsForHash().increment(redisKey, "s", 1.0);
+        redisTemplate.opsForHash().lengthOfValue("re", "er");
+        //redisTemplate.opsForHash().putIfAbsent()
         System.out.println(redisTemplate.opsForHash().get(redisKey, "id"));
         System.out.println(redisTemplate.opsForHash().get(redisKey, "username"));
     }
@@ -57,7 +71,15 @@ public class RedisTest {
         redisTemplate.opsForList().leftPush(redisKey, 101);
         redisTemplate.opsForList().leftPush(redisKey, 102);
         redisTemplate.opsForList().leftPush(redisKey, 103);
+        //Insert {@code value} to {@code key} before {@code pivot}
+        redisTemplate.opsForList().leftPush(redisKey, 1, 103);
+        //if only the list present
+        redisTemplate.opsForList().leftPushIfPresent(redisKey, 1);
 
+        redisTemplate.opsForList().rightPopAndLeftPush(redisKey, redisKey);
+        // When source is empty, Redis will block the connection until another client pushes to it or until timeout is reached.
+        // A timeout of zero can be used to block indefinitely.
+        redisTemplate.opsForList().rightPopAndLeftPush(redisKey, redisKey, 1000, TimeUnit.MILLISECONDS);
         System.out.println(redisTemplate.opsForList().size(redisKey));
         System.out.println(redisTemplate.opsForList().index(redisKey, 0));
         System.out.println(redisTemplate.opsForList().range(redisKey, 0, 2));

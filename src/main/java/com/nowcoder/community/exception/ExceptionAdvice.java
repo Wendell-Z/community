@@ -1,4 +1,4 @@
-package com.nowcoder.community.Exception;
+package com.nowcoder.community.exception;
 
 import com.nowcoder.community.util.CommunityUtil;
 import org.slf4j.Logger;
@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 
 //表示只监测controller抛出的异常
 @ControllerAdvice(annotations = Controller.class)
@@ -33,7 +32,7 @@ public class ExceptionAdvice {
         String xRequestedWith = request.getHeader("x-requested-with");
         //ajax对象
         if ("XMLHttpRequest".equals(xRequestedWith)) {
-            String msg = CommunityUtil.getString(500, "服务器发生异常！");
+            String msg = CommunityUtil.getJsonString(500, "服务器发生异常！");
             response.setContentType("application/plain;charset=utf-8");
             PrintWriter writer = response.getWriter();
             writer.write(msg);
@@ -41,4 +40,5 @@ public class ExceptionAdvice {
             response.sendRedirect(request.getContextPath() + "/error");
         }
     }
+
 }

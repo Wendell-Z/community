@@ -1,4 +1,4 @@
-package com.nowcoder.community.Event;
+package com.nowcoder.community.event;
 
 import com.alibaba.fastjson.JSONObject;
 import com.nowcoder.community.entity.Event;

@@ -1,6 +1,5 @@
 package com.nowcoder.community.service;
 
-import com.nowcoder.community.Event.EventProducer;
 import com.nowcoder.community.dao.DiscussPostRepository;
 import com.nowcoder.community.entity.DiscussPost;
 import org.elasticsearch.action.search.SearchResponse;

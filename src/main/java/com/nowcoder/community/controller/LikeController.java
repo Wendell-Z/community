@@ -1,8 +1,7 @@
 package com.nowcoder.community.controller;
 
-import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.annontation.CalculateScore;
-import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.User;
 import com.nowcoder.community.holder.UserHolder;
@@ -11,7 +10,6 @@ import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -63,7 +61,7 @@ public class LikeController implements CommunityConstant {
         map.put("postId", postId);
         // 报错的情况,将来统一处理.
         //return CommunityUtil.getString(200, "发布成功！", map);
-        return CommunityUtil.getString(200, null, map);
+        return CommunityUtil.getJsonString(200, null, map);
     }
 
 

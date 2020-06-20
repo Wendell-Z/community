@@ -1,13 +1,10 @@
-package com.nowcoder.community.Aspect;
+package com.nowcoder.community.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.springframework.security.web.context.HttpRequestResponseHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-@Component
+//@Component
 //@Aspect
 public class AlphaAspect {
 
@@ -36,21 +33,21 @@ public class AlphaAspect {
         System.out.println("afterRetuning");
     }
 
-//    //抛异常后调用
+    //    //抛异常后调用
 //    @AfterThrowing("pointcut()")
 //    public void afterThrowing() {
 //        System.out.println("afterThrowing");
 //    }
 //
-//    //方法执行前后调用
-//    @Around("pointcut()")
-//    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-//        System.out.println("around before");
-//        //joinPoint即对应的方法 即连接点
-//        //joinPoint.proceed();将service中执行的方法封装成了joinPoint  调用proceed()执行方法
-//        Object obj = joinPoint.proceed();
-//        System.out.println("around after");
-//        return obj;
-//    }
+    //方法执行前后调用
+    @Around("pointcut()")
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println("around before");
+        //joinPoint即对应的方法 即连接点
+        //joinPoint.proceed();将service中执行的方法封装成了joinPoint  调用proceed()执行方法
+        Object obj = joinPoint.proceed();
+        System.out.println("around after");
+        return obj;
+    }
 
 }

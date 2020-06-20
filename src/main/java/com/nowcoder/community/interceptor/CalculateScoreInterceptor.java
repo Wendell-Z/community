@@ -1,7 +1,6 @@
-package com.nowcoder.community.intercepter;
+package com.nowcoder.community.interceptor;
 
 import com.nowcoder.community.annontation.CalculateScore;
-import com.nowcoder.community.annontation.LoginRequired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -10,7 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
 import java.util.List;
 
 @Component

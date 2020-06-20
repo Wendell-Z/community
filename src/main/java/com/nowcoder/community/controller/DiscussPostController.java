@@ -1,6 +1,6 @@
 package com.nowcoder.community.controller;
 
-import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.annontation.CalculateScore;
 import com.nowcoder.community.entity.*;
 import com.nowcoder.community.holder.UserHolder;
@@ -10,10 +10,7 @@ import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
-import com.nowcoder.community.util.RedisKeyUtil;
-import com.nowcoder.community.util.SensitiveFilter;
 import org.apache.commons.lang3.StringUtils;
-import org.quartz.utils.StringKeyDirtyFlagMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -46,11 +43,11 @@ public class DiscussPostController implements CommunityConstant {
         User user = userHolder.getUser();
         if (user == null) {
             //未登录
-            return CommunityUtil.getString(403, "你还没有登录！");
+            return CommunityUtil.getJsonString(403, "你还没有登录！");
         }
 
         if (null == title || StringUtils.isBlank(title)) {
-            return CommunityUtil.getString(1, "标题不能为空！");
+            return CommunityUtil.getJsonString(1, "标题不能为空！");
         }
         DiscussPost post = new DiscussPost();
         post.setUserId(user.getId());
@@ -69,7 +66,7 @@ public class DiscussPostController implements CommunityConstant {
         Map<String, Object> map = new HashMap<>();
         map.put("postId", post.getId());
         // 报错的情况,将来统一处理.
-        return CommunityUtil.getString(200, "发布成功！", map);
+        return CommunityUtil.getJsonString(200, "发布成功！", map);
     }
 
     /**
@@ -165,7 +162,7 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityId(id);
         eventProducer.fireEvent(event);
 
-        return CommunityUtil.getString(200);
+        return CommunityUtil.getJsonString(200);
     }
 
     // 加精
@@ -187,7 +184,7 @@ public class DiscussPostController implements CommunityConstant {
         Map<String, Object> map = new HashMap<>();
         map.put("postId", id);
         // 报错的情况,将来统一处理.
-        return CommunityUtil.getString(200, "发布成功！", map);
+        return CommunityUtil.getJsonString(200, "发布成功！", map);
     }
 
     // 删除
@@ -204,6 +201,6 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityId(id);
         eventProducer.fireEvent(event);
 
-        return CommunityUtil.getString(200);
+        return CommunityUtil.getJsonString(200);
     }
 }

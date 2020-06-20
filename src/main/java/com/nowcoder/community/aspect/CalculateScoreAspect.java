@@ -1,4 +1,4 @@
-package com.nowcoder.community.Aspect;
+package com.nowcoder.community.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.nowcoder.community.util.RedisKeyUtil;

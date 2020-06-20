@@ -76,7 +76,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                 )
                 .antMatchers(
                         "/discuss/delete",
-                        "/statistic/**"
+                        "/statistic/**",
+                        "/actuator/**"
                 )
                 .hasAnyAuthority(
                         AUTHORITY_ADMIN
@@ -91,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                         if ("XMLHTTPRequest".equals(xRquestWith)) {
                             httpServletResponse.setContentType("plain/text");
                             PrintWriter writer = httpServletResponse.getWriter();
-                            writer.write(CommunityUtil.getString(403, "你还未登录！"));
+                            writer.write(CommunityUtil.getJsonString(403, "你还未登录！"));
                         } else {
                             // 重定向 重新访问登录页面
                             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login");
@@ -106,9 +107,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                         if ("XMLHTTPRequest".equals(xRquestWith)) {
                             httpServletResponse.setContentType("plain/text");
                             PrintWriter writer = httpServletResponse.getWriter();
-                            writer.write(CommunityUtil.getString(403, "你没有访问此功能的权限！"));
+                            writer.write(CommunityUtil.getJsonString(403, "你没有访问此功能的权限！"));
                         } else {
-                            // 重定向 重新访问登录页面
+                            // 重定向 重新访问无权限提示页面
                             httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/denied");
                         }
                     }

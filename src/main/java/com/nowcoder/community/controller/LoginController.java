@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -43,6 +44,12 @@ public class LoginController implements CommunityConstant {
     @Autowired
     private Producer producer;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
+
     @GetMapping(value = "/register")
     public String getRegisterPage() {
         return "/site/register";
@@ -52,13 +59,6 @@ public class LoginController implements CommunityConstant {
     public String getLoginPage() {
         return "/site/login";
     }
-
-    @Autowired
-    private RedisTemplate redisTemplate;
-
-    @Value("${server.servlet.context-path}")
-    private String contextPath;
-
     /**
      * 用户名 邮箱 密码自动绑定
      *
@@ -158,7 +158,7 @@ public class LoginController implements CommunityConstant {
     @GetMapping(value = "/logout")
     public String logout(@CookieValue("ticket") String ticket) {
         userService.logout(ticket);
-        SecurityContextHolder.clearContext();
+        // SecurityContextHolder.clearContext();
         return "redirect:/login";
     }
 }

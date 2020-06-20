@@ -1,6 +1,6 @@
 package com.nowcoder.community.controller;
 
-import com.nowcoder.community.Event.EventProducer;
+import com.nowcoder.community.event.EventProducer;
 import com.nowcoder.community.annontation.LoginRequired;
 import com.nowcoder.community.entity.Event;
 import com.nowcoder.community.entity.Page;
@@ -45,7 +45,7 @@ public class FollowController implements CommunityConstant {
                 .setEntityId(entityId)
                 .setEntityUserId(entityId);
         eventProducer.fireEvent(event);
-        return CommunityUtil.getString(200, "关注成功", null);
+        return CommunityUtil.getJsonString(200, "关注成功", null);
     }
 
     @LoginRequired
@@ -56,7 +56,7 @@ public class FollowController implements CommunityConstant {
 
         followService.unfollow(user.getId(), entityType, entityId);
 
-        return CommunityUtil.getString(200, "已取消关注!");
+        return CommunityUtil.getJsonString(200, "已取消关注!");
     }
 
     @GetMapping(value = "/followees/{userId}")

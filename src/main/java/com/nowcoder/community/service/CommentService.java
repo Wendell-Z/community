@@ -1,5 +1,6 @@
 package com.nowcoder.community.service;
 
+import com.nowcoder.community.annontation.AlphaTransactional;
 import com.nowcoder.community.entity.Comment;
 import com.nowcoder.community.mapper.CommentMapper;
 import com.nowcoder.community.util.SensitiveFilter;
@@ -33,7 +34,8 @@ public class CommentService {
     }
 
     //隔离级别 传播机制 回滚检测的异常
-    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    //@Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @AlphaTransactional
     public int addComment(Comment comment) {
         if (comment == null) {
             throw new IllegalArgumentException("参数不能为空!");

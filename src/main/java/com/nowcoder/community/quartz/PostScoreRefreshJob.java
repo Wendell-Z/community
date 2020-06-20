@@ -45,7 +45,8 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         String scoreKey = RedisKeyUtil.getPostScoreKey();
-        //what is this?
+        //what is this? 绑定操作
+//        redisTemplate.opsForSet().size(scoreKey);
         BoundSetOperations operations = redisTemplate.boundSetOps(scoreKey);
         if (operations.size() == 0) {
             logger.info("任务取消，没有需要刷新的帖子！");
@@ -60,7 +61,7 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
 
     private void refresh(int postId) {
         DiscussPost post = discussPostService.selectDiscussPostById(postId);
-        if (post == null) {
+        if (post == null || post.getStatus() == 2) {
             logger.error("该帖子不存在: id = " + postId);
             return;
         }
@@ -76,7 +77,5 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
         post.setScore(score);
         discussPostService.updatePostScore(postId, score);
         elasticSearchService.savePost(post);
-
-
     }
 }
